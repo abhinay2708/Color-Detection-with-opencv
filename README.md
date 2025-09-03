@@ -1,36 +1,27 @@
-# 🎨 Color Detection using OpenCV and Streamlit
+# 🎥 Real-time Color Detection with OpenCV + Streamlit
 
-This project is about detecting colors in real time using your computer's webcam.  
-We use **OpenCV** (for image processing), **NumPy** (for handling arrays), and **Streamlit** (for making a simple web app).
-
----
-
-## 🔍 How the Code Works
-
-1. **Capture video**  
-   The app uses your webcam to capture live video.
-
-2. **Convert colors**  
-   The captured video (BGR format) is converted into **HSV format**.  
-   - H (Hue): actual color (red, green, blue, etc.)  
-   - S (Saturation): intensity of the color  
-   - V (Value): brightness of the color  
-
-3. **Define color ranges**  
-   For each color (Red, Green, Blue, Yellow, Orange, Purple), we set a **range in HSV values**.  
-   Example: Red is between `[161, 155, 84]` and `[179, 255, 255]`.
-
-4. **Create a mask**  
-   The mask checks which pixels of the frame fall inside the chosen color range.
-
-5. **Show result**  
-   Only the parts of the frame that match the selected color are displayed.  
-   You can choose the color from the sidebar in the Streamlit app.
+This project lets you detect specific colors in **real time** using your **webcam**.  
+It is built with:
+- **OpenCV** → for image processing  
+- **NumPy** → for working with pixel arrays  
+- **Streamlit** + **streamlit-webrtc** → for creating a live interactive web app  
 
 ---
 
-## ▶️ How to Run
+## 🔍 How It Works
+1. The app captures video from your webcam directly in the browser.  
+2. Each video frame is converted from **BGR to HSV color space**.  
+   - **Hue (H)** = the type of color (red, green, blue, etc.)  
+   - **Saturation (S)** = intensity of the color  
+   - **Value (V)** = brightness of the color  
+3. Based on the color you choose in the sidebar, the app creates a **mask** that isolates only that color.  
+4. The result is displayed in real time on the screen.  
 
-1. Install requirements:
+---
+
+## 🛠️ Installation
+
+1. Clone this repository:
    ```bash
-   pip install -r requirements.txt
+   git clone https://github.com/your-username/color-detection-webcam.git
+   cd color-detection-webcam
