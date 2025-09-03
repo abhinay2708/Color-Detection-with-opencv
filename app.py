@@ -1,17 +1,15 @@
 import cv2
 import numpy as np
 import streamlit as st
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 
-st.title("🎨 Real-time Color Detection with OpenCV + Streamlit")
+st.title("🎥 Real-time Color Detection with Webcam")
 
 # Sidebar for selecting color
 color_option = st.sidebar.selectbox(
     "Choose a color to detect:",
     ["Red", "Green", "Blue", "Yellow", "Orange", "Purple"]
 )
-
-# Checkbox created once (outside loop)
-run_camera = st.sidebar.checkbox("Run Camera", value=True, key="run_camera")
 
 # Define HSV color ranges
 color_ranges = {
@@ -23,33 +21,27 @@ color_ranges = {
     "Purple": ([129, 50, 70], [158, 255, 255])
 }
 
-# Streamlit image placeholder
-frame_window = st.image([])
 
-# Capture webcam
-cap = cv2.VideoCapture(0)
+class ColorDetection(VideoTransformerBase):
+    def transform(self, frame):
+        img = frame.to_ndarray(format="bgr24")
 
-# Loop only if camera is running
-while run_camera:
-    ret, frame = cap.read()
-    if not ret:
-        st.error("Failed to access webcam.")
-        break
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # Get selected color HSV range
+        lower, upper = color_ranges[color_option]
+        lower = np.array(lower)
+        upper = np.array(upper)
 
-    # Get selected color HSV range
-    lower, upper = color_ranges[color_option]
-    lower = np.array(lower)
-    upper = np.array(upper)
+        mask = cv2.inRange(hsv, lower, upper)
+        result = cv2.bitwise_and(img, img, mask=mask)
 
-    mask = cv2.inRange(hsv_frame, lower, upper)
-    result = cv2.bitwise_and(frame, frame, mask=mask)
+        return result
 
-    # Convert BGR → RGB for Streamlit
-    result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
 
-    # Show frame
-    frame_window.image(result)
-
-cap.release()
+# Start webcam stream
+webrtc_streamer(
+    key="example",
+    video_transformer_factory=ColorDetection,
+    media_stream_constraints={"video": True, "audio": False},
+)
