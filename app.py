@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase, RTCConfiguration
 
-st.title("🎥 Real-time Color Detection with Webcam")
+st.title("🎥 Real-time Color Detection 😊")
 
 # Sidebar for selecting color
 color_option = st.sidebar.selectbox(
@@ -30,6 +30,24 @@ color_bgr = {
     "Orange": (0, 165, 255),
     "Purple": (255, 0, 255)
 }
+
+# Configure STUN + TURN servers
+RTC_CONFIGURATION = RTCConfiguration(
+    {
+        "iceServers": [
+            {"urls": ["stun:stun.l.google.com:19302"]},  # Free Google STUN
+            {
+                "urls": [
+                    "turn:openrelay.metered.ca:80",
+                    "turn:openrelay.metered.ca:443",
+                    "turn:openrelay.metered.ca:443?transport=tcp",
+                ],
+                "username": "openrelayproject",
+                "credential": "openrelayproject",
+            },
+        ]
+    }
+)
 
 
 class ColorDetection(VideoTransformerBase):
@@ -66,7 +84,8 @@ class ColorDetection(VideoTransformerBase):
 
 # Start webcam stream
 webrtc_streamer(
-    key="example",
+    key="color-detection",
     video_transformer_factory=ColorDetection,
     media_stream_constraints={"video": True, "audio": False},
+    rtc_configuration=RTC_CONFIGURATION,
 )
